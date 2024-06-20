@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 41818
+      MYSQL_DB: my_db
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: 0123
+    networks:
+      - my_network
+
+  flask-app:
+    build: .  # Replace with the path to your Flask application directory
+    restart: always
+    environment:
+      MYSQL_HOST: db  # Use the service name defined in docker-compose.yml for MySQL host
+      MYSQL_DB: my_db
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: 0123
+    ports:
+      - "5000:5000"
+    networks:
+      - my_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: 41818  # Use the same MySQL root password as defined above
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+
+networks:
+  my_network:
+    driver: bridge
